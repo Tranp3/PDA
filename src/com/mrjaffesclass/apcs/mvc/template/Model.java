@@ -1,6 +1,7 @@
 package com.mrjaffesclass.apcs.mvc.template;
 
 import com.mrjaffesclass.apcs.messenger.*;
+import java.text.*;
 
 /**
  * The model represents the data that the app uses.
@@ -11,10 +12,12 @@ public class Model implements MessageHandler {
 
   // Messaging system for the MVC
   private final Messenger mvcMessaging;
-
   // Model's data variables
-  private int variable1;
-  private int variable2;
+  private double Age2;
+  private double Age;
+  private double minAge;
+  private double maxAge;
+  private int Progress;
 
   /**
    * Model constructor: Create the data representation of the program
@@ -29,75 +32,44 @@ public class Model implements MessageHandler {
    * Initialize the model here and subscribe to any required messages
    */
   public void init() {
-    mvcMessaging.subscribe("view:changeButton", this);
-    setVariable1(10);
-    setVariable2(-10);
+    mvcMessaging.subscribe("view:computeButton", this);
+    mvcMessaging.subscribe("view:computeButton1", this);
   }
   
   @Override
   public void messageHandler(String messageName, Object messagePayload) {
-    if (messagePayload != null) {
+    NumberFormat fmt = NumberFormat.getNumberInstance();
+    fmt.setMaximumFractionDigits(0);
+    fmt.setMinimumFractionDigits(0);
+      if (messagePayload != null) {
       System.out.println("MSG: received by model: "+messageName+" | "+messagePayload.toString());
     } else {
       System.out.println("MSG: received by model: "+messageName+" | No data sent");
     }
     MessagePayload payload = (MessagePayload)messagePayload;
-    int field = payload.getField();
-    int direction = payload.getDirection();
-    
-    if (direction == Constants.UP) {
-      if (field == 1) {
-        setVariable1(getVariable1()+Constants.FIELD_1_INCREMENT);
-      } else {
-        setVariable2(getVariable2()+Constants.FIELD_2_INCREMENT);
+      switch (messageName) {
+          case "view:computeButton":                          
+              Age = Double.parseDouble(payload.getAge());
+              if (Age >= 15){
+//                   Age = Integer.parseInt(payload.getAge());
+                String x = fmt.format((Age/2)+7);  
+                minAge = Math.abs(Double.parseDouble(x));
+                String y = fmt.format((Age-7)*2);
+                maxAge = Math.abs(Double.parseDouble(y));              
+                mvcMessaging.notify("model:minAge", minAge, true);
+                mvcMessaging.notify("model:maxAge", maxAge, true);
+              }
+              else {
+                mvcMessaging.notify("model:error", 1 , true);
+              }
+              break;
+           case "view:computeButton1":                 
+              Age2 = Double.parseDouble(payload.getAge());
+              Progress = (Age2 > minAge)?  (Age2 < maxAge)? 0:1:1;
+              mvcMessaging.notify("model:Check",Progress, true);
+              break;
       }
-    } else {
-      if (field == 1) {
-        setVariable1(getVariable1()-Constants.FIELD_1_INCREMENT);
-      } else {
-        setVariable2(getVariable2()-Constants.FIELD_2_INCREMENT);
-      }      
-    }
   }
 
-  /**
-   * Getter function for variable 1
-   * @return Value of variable1
-   */
-  public int getVariable1() {
-    return variable1;
-  }
-
-  /**
-   * Setter function for variable 1
-   * @param v New value of variable1
-   */
-  public void setVariable1(int v) {
-    variable1 = v;
-    // When we set a new value to variable 1 we need to also send a
-    // message to let other modules know that the variable value
-    // was changed
-    mvcMessaging.notify("model:variable1Changed", variable1, true);
-  }
-  
-  /**
-   * Getter function for variable 1
-   * @return Value of variable2
-   */
-  public int getVariable2() {
-    return variable2;
-  }
-  
-  /**
-   * Setter function for variable 2
-   * @param v New value of variable 2
-   */
-  public void setVariable2(int v) {
-    variable2 = v;
-    // When we set a new value to variable 2 we need to also send a
-    // message to let other modules know that the variable value
-    // was changed
-    mvcMessaging.notify("model:variable2Changed", variable2, true);
-  }
 
 }
