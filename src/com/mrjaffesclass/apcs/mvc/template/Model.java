@@ -49,7 +49,7 @@ public class Model implements MessageHandler {
     MessagePayload payload = (MessagePayload)messagePayload;
       switch (messageName) {
           case "view:computeButton":                          
-              Age = Double.parseDouble(payload.getAge());
+                Age = Double.parseDouble(payload.getAge());
               if (Age >= 15){
 //                   Age = Integer.parseInt(payload.getAge());
                 String x = fmt.format((Age/2)+7);  
@@ -64,9 +64,9 @@ public class Model implements MessageHandler {
               }
               break;
            case "view:computeButton1":                 
-              Age2 = Double.parseDouble(payload.getAge());
-              Progress = (Age2 > minAge)?  (Age2 < maxAge)? 0:1:1;
-              mvcMessaging.notify("model:Check",Progress, true);
+                Age2 = Double.parseDouble(payload.getAge());
+                Progress = (Age2 > minAge)?  (Age2 < maxAge)? 0:1:1;
+                mvcMessaging.notify("model:Check",Progress, true);
               break;
       }
   }

@@ -199,6 +199,8 @@ public class View extends javax.swing.JFrame implements MessageHandler {
         mvcMessaging.notify("view:computeButton", createPayload(textField.getText()), true);
         Click = 1;
         jLabel3.setText("Enter your date age");
+        jButton3.setBackground(Color.white);
+        jButton3.setText("");
     }
     else {
         mvcMessaging.notify("view:computeButton1", createPayload(textField.getText()), true);
